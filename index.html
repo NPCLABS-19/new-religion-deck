@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8f6">
+    <meta name="description" content="New Religion — a visual direction study in packaging, merchandising, installations and IRL experiences.">
+    <title>New Religion — Visual Direction</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#packaging-panel">Skip to the canvas</a>
+
+    <header class="masthead">
+      <a class="wordmark" href="#packaging" aria-label="New Religion, packaging visual systems">new religion</a>
+      <nav class="section-nav" role="tablist" aria-label="Visual direction sections">
+        <button class="section-tab" id="packaging-tab" role="tab" aria-selected="true" aria-controls="packaging-panel" tabindex="0" data-section="packaging">packaging visual systems</button>
+        <button class="section-tab" id="merchandising-tab" role="tab" aria-selected="false" aria-controls="merchandising-panel" tabindex="-1" data-section="merchandising">merchandising</button>
+        <button class="section-tab" id="irl-tab" role="tab" aria-selected="false" aria-controls="irl-panel" tabindex="-1" data-section="irl">irl</button>
+      </nav>
+      <span class="header-note" aria-hidden="true">a visual study</span>
+    </header>
+
+    <main id="main">
+      <p class="sr-only" id="canvas-instructions">Drag or scroll in any direction to explore the infinite canvas. Use arrow keys to move, plus and minus to zoom, and Home to return to the centre. Select a reference to enlarge it.</p>
+      <section class="canvas-panel" id="packaging-panel" role="tabpanel" aria-labelledby="packaging-tab" tabindex="0">
+        <h1 class="sr-only">New Religion packaging visual systems</h1>
+        <div class="reference-board" id="reference-board" tabindex="0" aria-label="Infinite packaging reference canvas" aria-describedby="canvas-instructions">
+          <div class="direction-note" id="direction-note">
+            <p id="packaging-direction"><span class="highlighted-copy">occult symbolism and iconography, paired with reflective chrome finish of the spout bag, charms and color adapts for flavours - should look minimal but with clear occult illustrations, not type led</span></p>
+            <div class="merchandising-direction" id="merchandising-direction" hidden>
+              <p><span class="highlighted-copy">instruments of self belief</span></p>
+              <p class="water-concept"><span class="highlighted-copy">a vial of water within each pendant and object. a reminder that we are water — and, like lakes and other bodies of water, need nourishment, both spiritual and physical.</span></p>
+              <div class="brand-partners">
+                <p><span class="highlighted-copy">possible brand partners</span></p>
+                <p class="partner-links"><a class="highlighted-copy" href="https://bhavyaramesh.com/" target="_blank" rel="noopener noreferrer">bhavya ramesh</a> <a class="highlighted-copy" href="https://frostbitelab.com/" target="_blank" rel="noopener noreferrer">frostbite</a> <a class="highlighted-copy" href="https://www.instagram.com/two_odd_/" target="_blank" rel="noopener noreferrer">two odd</a></p>
+              </div>
+            </div>
+            <div class="irl-direction" id="irl-direction" hidden>
+              <p><span class="highlighted-copy">monastic pop ups, mix of brutalism and chrome, sisyphus ruck sack marathon, conceptual pop ups in busy streets, nietzschen zarathustra in church street as an activation</span></p>
+              <p class="activation-concept"><span class="highlighted-copy">people dressed in typical religious garb, in our case the silver tshirt merch with a monk hood, giving out pamphlets on the street to join the NEW RELIGION</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="canvas-panel" id="merchandising-panel" role="tabpanel" aria-labelledby="merchandising-tab" tabindex="0" hidden>
+        <h1 class="sr-only">New Religion merchandising references</h1>
+      </section>
+      <section class="canvas-panel" id="irl-panel" role="tabpanel" aria-labelledby="irl-tab" tabindex="0" hidden>
+        <h1 class="sr-only">New Religion IRL installations and space design</h1>
+      </section>
+    </main>
+
+    <footer class="canvas-footer" aria-label="Presentation details">
+      <span id="reference-count">32 references</span>
+      <span id="canvas-hint">drag or scroll in any direction</span>
+      <div class="canvas-tools" id="canvas-tools" aria-label="Canvas zoom">
+        <button type="button" id="zoom-out" aria-label="Zoom out"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10h10"/></svg></button>
+        <button type="button" id="zoom-reset" aria-label="Reset canvas view"><span id="zoom-value">100%</span></button>
+        <button type="button" id="zoom-in" aria-label="Zoom in"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10h10M10 5v10"/></svg></button>
+      </div>
+    </footer>
+
+    <dialog class="image-viewer" id="image-viewer" aria-label="Reference viewer">
+      <div class="viewer-topline">
+        <span class="viewer-brand">new religion</span>
+        <span id="viewer-count" aria-live="polite">1 / 32</span>
+        <button class="icon-button viewer-close" id="viewer-close" aria-label="Close reference">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <button class="icon-button viewer-prev" id="viewer-prev" aria-label="Previous reference">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg>
+      </button>
+      <figure class="viewer-figure">
+        <img id="viewer-image" src="./assets/02-ghost-hardware.png" alt="">
+        <video id="viewer-video" loop muted playsinline controls preload="metadata" aria-label="Metal charm reference video" hidden></video>
+        <figcaption id="viewer-caption"></figcaption>
+      </figure>
+      <button class="icon-button viewer-next" id="viewer-next" aria-label="Next reference">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg>
+      </button>
+      <span class="viewer-key-hint" aria-hidden="true">← → to browse · esc to close</span>
+    </dialog>
+
+    <noscript><p class="no-script">Please enable JavaScript to view the reference canvas.</p></noscript>
+  </body>
+</html>
