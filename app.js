@@ -276,7 +276,7 @@ function composeField() {
   const isMerchandising = references === merchandisingReferences;
   const isIrl = references === irlReferences;
   const centreClearance = isPackaging ? 120 : isMerchandising ? 190 : 205;
-  const excerpts = isPackaging ? missionExcerpts : isIrl ? [
+  const excerpts = isPackaging ? [missionExcerpts[1], missionExcerpts[2], missionExcerpts[6]] : isIrl ? [
     { text: 'the self is supreme', plain: true },
     { text: 'a space to retreat to self', plain: true },
   ] : [];
@@ -287,19 +287,26 @@ function composeField() {
   const ends = [...start];
   const widths = [216, 232, 220, 238, 208, 226];
   const nudges = [-6, 4, 0, 7, -4, 2];
-  const order = isPackaging ? [16, 0, 17, 11, 18, 1, 19, 12, 20, 31, 2, 21, 5, 22, 13, 23, 3, 24, 6, 25, 4, 26, 7, 27, 14, 28, 8, 29, 9, 30, 10, 15] : isMerchandising ? [0, 1, 2, 3, 7, 8, 9, 4, 5, 6, 13, 10, 14, 11, 15, 12, 16, 17] : [0, 9, 3, 10, 11, 2, 5, 12, 4, 6, 14, 13, 7, 15, 17, 16, 19, 20, 8, 18, 21, 22, 23, 24, 1];
+  const order = isPackaging ? [16, 0, 17, 11, 18, 1, 19, 12, 20, 31, 2, 21, 5, 22, 13, 23, 3, 24, 6, 25, 4, 26, 7, 27, 14, 28, 8, 29, 9, 30, 10, 15] : isMerchandising ? [0, 1, 2, 3, 7, 8, 9, 4, 5, 6, 13, 14, 10, 11, 15, 12, 16, 17] : [0, 9, 3, 10, 11, 2, 5, 12, 4, 6, 14, 13, 7, 15, 17, 16, 19, 20, 8, 18, 21, 22, 23, 24, 1];
   let quoteIndex = 0;
   function xFor(lane, width, offset = 0) { return -period.width / 2 + lane * laneWidth + (laneWidth - width) / 2 + offset; }
   function quoteHeight(text, width) { return Math.ceil((text.length + 2) / (width / 8.1)) * 23 + 12; }
   function addQuote(lane, y, available = Infinity) {
-    if (!excerpts.length || (isIrl && quoteIndex >= excerpts.length)) return false;
-    const excerpt = excerpts[quoteIndex % excerpts.length];
+    if (quoteIndex >= excerpts.length) return false;
+    const excerpt = excerpts[quoteIndex];
     const { text, href, plain } = typeof excerpt === 'string' ? { text: excerpt } : excerpt;
     const size = 224;
     const height = quoteHeight(text, size);
     if (height > available) return false;
     if ((lane === 2 || lane === 3) && y < centreClearance && y + height > -centreClearance) y = centreClearance + gap;
-    items.push({ kind: 'quote', text, href, plain, x: xFor(lane, size), y, size, height, quoteIndex });
+    const x = xFor(lane, size);
+    if (isPackaging && items.some(item => {
+      if (item.kind !== 'quote') return false;
+      const dx = Math.max(item.x - x - size, x - item.x - item.size, 0);
+      const dy = Math.max(item.y - y - height, y - item.y - item.height, 0);
+      return Math.hypot(dx, dy) < 280;
+    })) return false;
+    items.push({ kind: 'quote', text, href, plain, x, y, size, height, quoteIndex });
     ends[lane] = y + height + gap;
     quoteIndex++;
     return true;
@@ -310,17 +317,17 @@ function composeField() {
     const height = size * references[index].height / references[index].width;
     let y = ends[lane];
     if ((lane === 2 || lane === 3) && y < centreClearance && y + height > -centreClearance) {
-      addQuote(lane, y, -centreClearance - y - gap);
+      if (!isPackaging) addQuote(lane, y, -centreClearance - y - gap);
       y = centreClearance + gap;
     }
     items.push({ ...references[index], kind: 'media', index, x: xFor(lane, size, nudges[position % nudges.length]), y, size });
     ends[lane] = y + height + gap;
-    if (position % 5 === 3 && quoteIndex < excerpts.length) addQuote(lane, ends[lane]);
+    const quoteSlot = isPackaging ? position % 10 === 7 : position % 5 === 3;
+    if (quoteSlot) addQuote(lane, ends[lane]);
   });
-  // Packaging fills short lanes; IRL stops after its two short text elements.
+  // Repeated images fill lane tails; copy is never used as a gap filler.
   const target = Math.max(...ends);
-  if (isIrl) {
-    // Fill short tails with repeated images, keeping the IRL text sparse.
+  if (isPackaging || isIrl) {
     for (let lane = 0; lane < ends.length; lane++) {
       const size = widths[lane];
       while (target - ends[lane] > 120) {
@@ -328,7 +335,7 @@ function composeField() {
         if ((lane === 2 || lane === 3) && y < centreClearance) y = centreClearance + gap;
         const available = target - y - gap;
         const candidates = references.map((reference, index) => ({ reference, index, height: size * reference.height / reference.width }))
-          .filter(candidate => candidate.height <= available)
+          .filter(candidate => candidate.reference.type !== 'video' && candidate.height <= available)
           .sort((a, b) => b.height - a.height);
         const candidate = candidates[0];
         if (!candidate) break;
@@ -337,18 +344,14 @@ function composeField() {
       }
     }
   }
-  for (let lane = 0; lane < ends.length; lane++) {
-    while (target - ends[lane] > 120) {
-      if (!addQuote(lane, ends[lane], target - ends[lane])) break;
-    }
-  }
-  while (quoteIndex < excerpts.length) {
+  while (isIrl && quoteIndex < excerpts.length) {
     const lane = ends.indexOf(Math.min(...ends));
     addQuote(lane, ends[lane]);
   }
   period.height = Math.ceil((Math.max(...ends) + 920) / 20) * 20;
   if (isPackaging) {
-    items.push({ kind: 'quote', text: 'We are the builders of the temple of self, for those pulling heists on their own fate', x: -215, y: -75, size: 430, height: 160, quoteIndex: 'centre', hero: true, omitOrigin: true });
+    items.push({ ...references[0], kind: 'media', index: 0, x: -230, y: -100, size: 180, omitOrigin: true });
+    items.push({ ...references[11], kind: 'media', index: 11, x: 40, y: -80, size: 160, omitOrigin: true });
   } else if (isMerchandising) {
     items.push({ kind: 'quote', text: 'monasterymade of hydration', href: 'https://monasterymade.com/attar?v=17618820333639', x: -215, y: -185, size: 430, height: 40, quoteIndex: 'monastery' });
   }
