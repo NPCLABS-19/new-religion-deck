@@ -319,6 +319,24 @@ function composeField() {
   });
   // Packaging fills short lanes; IRL stops after its two short text elements.
   const target = Math.max(...ends);
+  if (isIrl) {
+    // Fill short tails with repeated images, keeping the IRL text sparse.
+    for (let lane = 0; lane < ends.length; lane++) {
+      const size = widths[lane];
+      while (target - ends[lane] > 120) {
+        let y = ends[lane];
+        if ((lane === 2 || lane === 3) && y < centreClearance) y = centreClearance + gap;
+        const available = target - y - gap;
+        const candidates = references.map((reference, index) => ({ reference, index, height: size * reference.height / reference.width }))
+          .filter(candidate => candidate.height <= available)
+          .sort((a, b) => b.height - a.height);
+        const candidate = candidates[0];
+        if (!candidate) break;
+        items.push({ ...candidate.reference, kind: 'media', index: candidate.index, x: xFor(lane, size, nudges[lane]), y, size });
+        ends[lane] = y + candidate.height + gap;
+      }
+    }
+  }
   for (let lane = 0; lane < ends.length; lane++) {
     while (target - ends[lane] > 120) {
       if (!addQuote(lane, ends[lane], target - ends[lane])) break;
